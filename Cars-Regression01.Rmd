@@ -1,0 +1,132 @@
+---
+title: "Linear Regression Analysis"
+author: "SP"
+date: "12/10/2019"
+output: html_document
+---
+
+Linear Regression :
+Finding the mathematical relation for a continuous response variable Y as function of one or more X variables
+
+```{r}
+head(cars)
+```
+
+Check the relation ship
+
+```{r}
+scatter.smooth(x=cars$speed, y=cars$dist, main="Dist vs. speed")
+```
+
+Check the out liers
+
+```{r}
+par(mfrow=c(1,2))
+boxplot(cars$speed)
+boxplot(cars$dist)
+```
+
+
+Density plots
+
+```{r}
+library(e1071)
+par(mfrow=c(1,2))
+plot(density(cars$speed))
+plot(density(cars$dist));
+```
+
+
+
+```{r}
+cor(cars$speed,cars$dist)
+```
+
+Building the model
+
+
+```{r}
+linearMod=lm(dist~speed, data=cars)
+print(linearMod)
+```
+
+diagnosis
+
+```{r}
+summary(linearMod)
+```
+
+
+```{r}
+AIC(linearMod)
+```
+
+
+```{r}
+BIC(linearMod)
+```
+
+
+
+```{r}
+set.seed(27)
+trainRowIndex=sample(1:nrow(cars),0.8*nrow(cars))
+traindata = cars[trainRowIndex,]
+testdata = cars[-trainRowIndex,]
+                        
+```
+
+
+
+```{r}
+lmMod = lm(dist~speed, data = traindata)
+distPred = predict(lmMod, testdata)
+```
+
+
+
+```{r}
+summary((lmMod))
+```
+
+
+
+```{r}
+actuals_preds <- data.frame(cbind(actuals=testdata$dist, predicteds=distPred))
+correlation_accuracy <- cor(actuals_preds)
+correlation_accuracy
+```
+
+
+
+
+```{r}
+head(actuals_preds)
+```
+
+
+```{r}
+# Min-Max Accuracy Calculation
+min_max_accuracy <- mean(apply(actuals_preds, 1, min) / apply(actuals_preds, 1, max)) 
+min_max_accuracy
+```
+
+
+```{r}
+# MAPE Calculation
+mape <- mean(abs((actuals_preds$predicteds - actuals_preds$actuals))/actuals_preds$actuals)
+mape
+```
+
+```{r}
+#install.packages('DMwR')
+DMwR::regr.eval(actuals_preds$actuals, actuals_preds$predicteds)
+```
+
+
+
+```{r}
+library(DAAG)
+#install.packages('DAAG')
+cvResults <- suppressWarnings(CVlm(data = cars, form.lm=dist ~ speed, m=5, dots=FALSE, seed=29, legend.pos="topleft",  printit=FALSE, main="small symbols are predicted values while bigger ones are actuals."))
+```
