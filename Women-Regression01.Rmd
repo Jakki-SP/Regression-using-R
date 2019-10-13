@@ -1,0 +1,31 @@
+---
+title: "Women-DiagnosticPlots"
+author: "SP"
+date: "14/10/2019"
+output: html_document
+---
+
+```{r}
+head(women)
+```
+
+```{r}
+plot(women)
+```
+
+
+
+```{r}
+fit = lm(weight ~ height, women) 
+fit
+```
+
+```{r}
+summary(fit)
+```
+
+```{r}
+par(mfrow=c(2,2))
+plot(fit)
+```
+
