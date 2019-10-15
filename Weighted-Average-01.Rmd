@@ -1,0 +1,110 @@
+---
+title: "Weighted-Average-01"
+author: "SP"
+date: "15/10/2019"
+output: pdf_document
+---
+
+```{r}
+x = c(16,14,22,10,14,17,10,13,19,12,18,11) # total number of reponses in completing a lesson
+y = c(77,70,85,50,62,70,55,63,88,57,81,52) # cost of computer time in cents
+```
+
+
+```{r}
+library(MASS)
+plot(x,y)
+```
+
+```{r}
+model1 = lm(y~x)
+model1
+```
+
+
+```{r}
+summary(model1)
+```
+
+```{r}
+plot(x,y)
+abline(model1)
+```
+```{r}
+#diagnostic plot
+plot(x, model1$residuals, xlab = "Responses", ylab = "Residuals")
+abline(h=0,lty=2)
+```
+
+
+
+```{r}
+#mean centrered OLS regression
+x.c = x-mean(x)
+olsfit.c=lm(y~x.c)
+summary(olsfit.c)
+```
+
+```{r}
+plot(x.c,y)
+abline(olsfit.c)
+```
+
+```{r}
+#diagnostic plot
+plot(x.c, olsfit.c$residuals, xlab = "Responses", ylab = "OLS fir residuals")
+abline(h=0,lty=2)
+```
+
+
+```{r}
+
+plot(x.c,abs(olsfit.c$residuals), xlab = "Responses", ylab = "OLS fir absolute value of residuals")
+#we see a positive relationship between the residuals meaning there could ve non-constasnt variance
+```
+
+
+
+
+```{r}
+# Absolute value of residuals regression due to possible due possible non-constant variance of error terms
+sd.func=lm(abs(olsfit.c$residuals)~x.c)
+summary(sd.func)
+```
+
+
+```{r}
+plot(x.c,abs(olsfit.c$residuals))
+abline(sd.func)
+```
+
+```{r}
+wights = 1/((sd.func$fitted.values)^2) 
+wights
+```
+
+```{r}
+# mean centered regression with wieghts inserted
+wlsfit = lm(y~x.c, weights = wights)
+summary(wlsfit)
+```
+
+```{r}
+summary(olsfit.c)
+```
+
+
+```{r}
+#model comparision
+plot(x.c,y)
+abline(olsfit.c, col = "red")
+abline(wlsfit, col="green")
+```
+
+```{r}
+# comparing the residuals
+par(mfrow=c(1,2))
+plot(x.c,studres(olsfit.c))
+plot(x.c,studres(wlsfit))
+```
+
