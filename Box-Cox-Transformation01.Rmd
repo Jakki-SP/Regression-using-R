@@ -1,0 +1,75 @@
+---
+title: "Box-Cox-Transformation01"
+author: "SP"
+date: "16/10/2019"
+output: pdf_document
+---
+
+```{r}
+head(trees)
+```
+
+```{r}
+r1 = lm(Volume~Height+Girth, trees)
+summary(r1)
+```
+
+```{r}
+plot(trees$Girth, rstandard((r1)))
+```
+
+```{r}
+par(mfrow=c(2,1))
+hist(r1$residuals)
+qqnorm(r1$residuals)
+qqline(r1$residuals)
+```
+
+```{r}
+library(moments)
+skewness(r1$residuals)
+```
+
+
+```{r}
+library(MASS)
+b=boxcox(Volume~Height+Girth, data=trees)
+```
+
+```{r}
+#b
+```
+
+```{r}
+lmda = b$x
+lik = b$y
+bc=cbind(lmda,lik)
+#bc
+```
+
+```{r}
+#bc[order(lik),]
+```
+
+
+```{r}
+# from the above box-cox plot, the lamba is around 0.3 ( i.e 1/3)
+r2 = lm(Volume^(1/3)~Height+Girth, trees)
+summary(r2)
+```
+
+```{r}
+par(mfrow=c(2,1))
+hist(r2$residuals)
+qqnorm(r2$residuals)
+qqline(r2$residuals)
+```
+
+```{r}
+skewness(r2$residuals)
+```
+
+```{r}
+plot(trees$Girth, rstandard((r2)))
+```
+
