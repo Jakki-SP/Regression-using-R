@@ -1,0 +1,42 @@
+---
+title: "Difference-In-Difference-Tool-Life"
+author: "SP"
+date: "26/10/2019"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+Dataset : 
+tool life (in hours) 
+lathe speed (rpm) 
+pre intervention (Status A )
+post intervention (Status B)
+
+
+```{r}
+tool_life<-read.csv("Tool.csv")
+tool_life
+```
+
+```{r}
+plot(tool_life$Speed, tool_life$Life, col = rep(1:2, each = 10), pch = 19)
+legend("topright", legend = paste("A", 1:2), pch = 19, col = 1, bty = "n")
+```
+
+
+```{r}
+lm_model=lm(Life ~ ., data = tool_life)
+summary(lm_model)
+```
+
+```{r}
+anova(lm_model)
+```
+
+```{r}
+par(mfrow=c(2,2))
+plot(lm_model)
+```
+
+
