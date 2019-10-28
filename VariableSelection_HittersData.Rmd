@@ -1,0 +1,177 @@
+---
+title: "VariableSelection-HittersData"
+author: "SP"
+date: "28/10/2019"
+output: pdf_document
+---
+
+```{r}
+library(car)
+library(MASS)
+library(LEAP)
+library(dplyr)
+library(leaps)
+library(ISLR)
+```
+
+```{r}
+ds<-read.csv("Hitters.csv")
+head(ds)
+```
+
+```{r}
+dim(ds)
+```
+
+```{r}
+names(ds)
+```
+
+```{r}
+summary(ds)
+```
+
+```{r}
+ds=na.omit(ds) # removing the NA's of the Salary
+dim(ds)
+```
+
+```{r}
+model1=lm(Salary~., data=ds)
+summary(model1)
+```
+
+```{r}
+#cor(ds)
+```
+
+
+
+
+
+
+```{r}
+AIC(model1)
+```
+
+```{r}
+BIC(model1)
+```
+
+## Let us choose the 7 variables
+
+```{r}
+reg_all=regsubsets(Salary~., data=ds, nvmax=7)
+```
+
+```{r}
+summary(reg_all)
+```
+
+
+```{r}
+coef(reg_all, 7)
+```
+
+## functions available in regsubset and summary
+
+```{r}
+names(reg_all)
+```
+
+```{r}
+reg_all_summary = summary(reg_all)
+```
+
+
+```{r}
+names(reg_all_summary)
+```
+
+## Forward Selection with nvmax number of regressors
+
+```{r}
+forward_reg = regsubsets(Salary~., data=ds, nvmax= 19,method="forward")
+summary(forward_reg)
+```
+
+```{r}
+names(forward_reg)
+```
+
+
+
+
+## Backward Elimination with nvmax number of regressors
+
+```{r}
+backward_reg = regsubsets(Salary~., data=ds, nvmax= 19, method="backward")
+summary(backward_reg)
+```
+
+```{r}
+names(backward_reg)
+```
+
+## Variable Selection using nvmax=5
+
+```{r}
+reg_all_5 = regsubsets(Salary~., data=ds, nvmax=5)
+#reg_all_5
+```
+
+```{r}
+summary_5 = summary(reg_all_5)
+summary_5
+```
+
+```{r}
+bestsubset_5=which.max(summary_5$adjr2)
+bestsubset_5
+```
+
+
+```{r}
+plot(summary_5$adjr2, xlab="Number of regressors", ylab="adjusted R-square", type ="l", col="red")
+points(bestsubset_5,summary_5$adjr2[bestsubset_5],col="blue",pch = 8)
+```
+From the above curve we can notice that, it is not yet reached the optimum number of regressors
+
+
+## Variable Selection using nvmax=19
+
+```{r}
+reg_all_19=regsubsets(Salary~., data=ds, nvmax=19)
+```
+
+
+```{r}
+summary(reg_all_19)
+```
+
+
+```{r}
+summary_19 = summary(reg_all_19)
+summary_19$adjr2
+```
+
+
+```{r}
+bestsubset_19=which.max(summary_19$adjr2)
+bestsubset_19
+```
+
+
+## Plots for variable selection
+
+
+```{r}
+plot(reg_all_19, scale="adjr2", col="green")
+```
+
+```{r}
+plot(summary_19$adjr2, xlab="Number of regressors", ylab="adjusted R-square", type ="l", col="red")
+points(bestsubset_19,summary_19$adjr2[bestsubset_19],col="blue",pch = 8)
+```
+
+
