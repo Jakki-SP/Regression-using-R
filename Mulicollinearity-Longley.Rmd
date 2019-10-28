@@ -1,0 +1,146 @@
+---
+title: "Multi-colliniearity-Longley"
+author: "SP"
+date: "28/10/2019"
+output: html_document
+---
+
+```{r}
+library(car)
+library(MASS)
+```
+
+
+```{r}
+ds<-read.csv("longley.csv")
+ds
+```
+
+# Model
+
+```{r}
+lm=lm(Employed ~ ., data=ds)
+summary(lm)
+```
+
+```{r}
+anova(lm)
+```
+
+# diagnostics
+
+```{r}
+par(mfrow=c(2,2))
+plot(lm)
+```
+
+# Co-relation matrix of regressors
+
+```{r}
+regressors_matrix=as.matrix(ds[, -7])
+regressors_matrix
+```
+
+```{r}
+cor(regressors_matrix)
+```
+
+# eigen values
+
+```{r}
+eigns=eigen(t(regressors_matrix)%*%regressors_matrix)
+eigns
+```
+
+# condition number
+
+```{r}
+cond_number = sqrt(eigns$values[1]/eigns$values)
+cond_number
+```
+
+# estimating the VIF for one regressor ( example)
+
+```{r}
+regressors_matrix[,1]
+```
+
+
+```{r}
+regressors_matrix[ , -1]
+```
+
+
+```{r}
+model1=lm(regressors_matrix[,1]~regressors_matrix[ , -1])
+summary(model1)
+```
+
+```{r}
+r_sqr_1 = summary(model1)$r.squared 
+r_sqr_1
+```
+
+```{r}
+vif_1 = 1/(1-r_sqr_1)
+vif_1
+```
+
+# all vifs in one go
+
+```{r}
+vif(lm)
+```
+
+
+```{r}
+ridgegrd = lm.ridge(Employed~., data=ds,lambda=seq(0,0.1, 0.001))
+#ridgegrd
+```
+
+
+```{r}
+names(ridgegrd)
+```
+
+```{r}
+matplot(ridgegrd$lambda, t(ridgegrd$coef), type="l",xlab=expression(lambda), ylab=expression(hat(beta)))
+abline(h=0, lwd=2)
+```
+
+# choosing the lambda
+
+
+## Hoerl and Kennard
+
+```{r}
+ridgegrd$kHKB
+```
+
+##  Lawless and Wang
+
+```{r}
+ridgegrd$kLW 
+```
+
+## Generalized Cross Validation
+
+```{r}
+min(ridgegrd$GCV) 
+```
+
+```{r}
+which.min(ridgegrd$GCV)
+```
+
+# estimating the coefficents now
+
+```{r}
+ridgegrd$coef[, ridgegrd$lambda==0.03]
+```
+
+```{r}
+lm$coefficients[-1]
+```
+
+
