@@ -1,0 +1,64 @@
+---
+title: "LogisticRegression_Surgery"
+author: "SP"
+date: "06/10/2019"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+```{r}
+surgery_ds = read.csv("surgery.csv")
+```
+
+
+```{r}
+head(surgery_ds)
+```
+
+
+```{r}
+plot(surgery_ds$Age, surgery_ds$Yi, col="blue")
+```
+
+
+
+
+```{r}
+surg_glm_model = glm(Yi~Age, data=surgery_ds, family=binomial)
+```
+
+
+
+```{r}
+summary(surg_glm_model)
+```
+
+
+```{r}
+head(surg_glm_model)
+```
+
+
+```{r}
+anova(surg_glm_model)
+```
+
+
+```{r}
+#Predict Y using fitted model
+preY = predict(surg_glm_model, type="response")
+preY
+```
+
+```{r}
+plot(surgery_ds$Age, preY)
+```
+
+
+
+```{r}
+with(surg_glm_model,cbind(res.deviance=deviance,df=df.residual,p=pchisq(deviance,df.residual,lower.tail = F)))
+```
+
