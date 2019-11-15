@@ -1,0 +1,58 @@
+---
+title: "Imputation-RegressionBased"
+author: "SP"
+date: "14/11/2019"
+output: pdf_document
+---
+
+
+```{r}
+
+```
+
+
+
+```{r}
+ds<-read.csv("fitness.csv")
+ds
+```
+
+#### RunPulse was read as the factor, so we will convert it into int
+```{r}
+ds$RunPulse = as.double(ds$RunPulse)
+ds
+```
+
+
+### Missing values
+#### Oxygen - has complete data
+#### RunTime - has three observations missing
+#### RunPulse - has three observations (4, 11, 14) missing together with RunTime and five on its own (5, 8, 18,19, 25)
+
+
+### Implementation of the regression as follows
+#### RunTime - on Oxygen to predict missing observations 4, 11, 14
+```{r}
+RunTime_on_Oxygen<-lm(RunTime~Oxygen,data=ds)
+new_ds_1<-data.frame(Oxygen=c(59.571,50.541,47.273))
+predict(RunTime_on_Oxygen,new_ds_1)
+```
+
+#### RunPulse - on Oxygen to predict missing observations 4, 11, 14
+```{r}
+RunPulse_on_Oxygen<-lm(RunPulse~Oxygen,data=ds)
+predict(RunPulse_on_Oxygen,new_ds_1)
+```
+
+#### RunPulse - on Oxygen and RunTime to predict missing observations 5, 8, 18, 19, 25
+```{r}
+RunPulse_on_Oxygen_RunTime<-lm(RunPulse~RunTime+Oxygen,data=ds)
+new_ds_1<-data.frame(Oxygen=c(49.874,49.091,46.672,46.774,45.118),
+                     RunTime=c(9.22,10.85,10.00,10.25,11.08))
+predict(RunPulse_on_Oxygen_RunTime,new_ds_1)
+```
+
+```{r}
+new_ds_1
+```
+
