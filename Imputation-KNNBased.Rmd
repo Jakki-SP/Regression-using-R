@@ -1,0 +1,66 @@
+---
+title: "Imputation-KNNBased"
+author: "SP"
+date: "15/11/2019"
+output: pdf_document
+---
+
+
+```{r}
+
+```
+
+
+
+```{r}
+ds<-read.csv("fitness.csv")
+ds
+```
+
+#### RunPulse was read as the factor, so we will convert it into int
+```{r}
+ds$RunPulse = as.double(ds$RunPulse)
+ds
+```
+
+
+### Missing values
+#### Oxygen - has complete data
+#### RunTime - has three observations missing
+#### RunPulse - has three observations (4, 11, 14) missing together with RunTime and five on its own (5, 8, 18,19, 25)
+
+
+
+```{r}
+library(yaImpute)
+set.seed(3)
+refs=sample(rownames(ds),c(1,2,3,6,7,9,10,12,13,15,16,17,20:24))
+```
+
+```{r}
+refs
+```
+
+```{r}
+x <- as.matrix(ds[, 1])
+x
+```
+
+```{r}
+y <- ds[, 2:3]
+y
+```
+
+```{r}
+raw <- yai(x = x, y = y, method = "randomForest")
+#raw
+```
+
+```{r}
+plot(raw)
+```
+
+```{r}
+tail(impute(raw))
+```
+
